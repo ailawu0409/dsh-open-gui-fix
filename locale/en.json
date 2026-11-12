@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Open in app window fix",
+    "description": "Makes the Open in menu start Electron applications such as VS Code, Cursor, and Windsurf with a visible window. The DSH host runs with ELECTRON_RUN_AS_NODE=1, and the Open in launch handed that variable to the application it started, so the application ran as a plain Node process and showed no window. This plugin removes the variable from the environment copy of a detached launch only. DSH's own environment is untouched, so terminals, shell tools, background jobs, and other child processes behave exactly as before; a DSH terminal is not covered either, where running code . still inherits the variable. GitHub Desktop, which starts through its packaged cli.js, is left unchanged. To undo, disable this row in Plugins: clicking an Electron application in the Open in menu then has no visible effect again."
+  }
+}

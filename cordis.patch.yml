@@ -1,0 +1,5 @@
+# gui-launch-env-fix: rewrites only the environment copy handed to a detached
+# GUI child, so "Open in VS Code" and similar applications start with a window.
+- insert:
+    - id: gui-launch-env-fix
+      name: '@local/gui-launch-env-fix'

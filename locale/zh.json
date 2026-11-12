@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "外部应用打开修复",
+    "description": "让“在应用中打开”菜单以可见窗口启动 VS Code、Cursor、Windsurf 等 Electron 应用。DSH 宿主进程带着 ELECTRON_RUN_AS_NODE=1 运行，原来的“在应用中打开”会把这个变量一并交给被启动的应用，使应用以纯 Node 进程运行、不显示窗口。本插件只从分离启动的 GUI 应用的环境副本中移除该变量，不修改 DSH 自身环境，因此终端、shell 工具、后台任务及其他子进程的行为完全不变；DSH 终端不在修复范围内，在终端里运行 code . 仍会继承该变量。通过打包的 cli.js 启动的 GitHub Desktop 保持原样。如需撤销，请在“插件”页停用本插件，此时点击“在应用中打开”菜单中的 Electron 应用会再次没有可见反应。"
+  }
+}
