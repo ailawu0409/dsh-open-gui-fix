@@ -1,5 +1,7 @@
 # dsh-open-gui-fix
 
+[English](README.md) | [简体中文](README.zh.md)
+
 Fixes the **Open in** menu of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
 for Electron applications such as VS Code, Cursor, and Windsurf: clicking
 **Open in VS Code** opens the application window instead of doing nothing
