@@ -64,8 +64,10 @@ The plugin has no page of its own. It takes effect for the menus that offer
 - A DSH host with `module.syncBuiltinESMExports` in its runtime (every current
   Electron/Node release has it). Without it the plugin row fails loudly instead
   of pretending to work.
-- Verified against DSH `0.2.2-rc.2` on Windows Desktop. The mechanism is not
-  Windows-specific, but macOS and Linux are untested.
+- Verified against DSH `0.2.2-rc.3` on Windows Desktop. The rc.3 launch path
+  and the credential scrub are unchanged from rc.2, so this update needed no
+  code change. The mechanism is not Windows-specific, but macOS and Linux are
+  untested.
 
 ## After a DSH upgrade
 

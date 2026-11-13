@@ -53,7 +53,8 @@ DSH 宿主进程带着 `ELECTRON_RUN_AS_NODE=1` 运行。open-in-app 的宿主�
 
 - DSH 宿主运行时需提供 `module.syncBuiltinESMExports`（当前各版本 Electron/Node 都有）。缺少它时
   插件会在插件页**显式报错**，而不是假装生效。
-- 已在 DSH `0.2.2-rc.2` + Windows 桌面端验证。实现机制本身与平台无关，但 macOS 与 Linux 未做验证。
+- 已在 DSH `0.2.2-rc.3` + Windows 桌面端验证：rc.3 的启动流程与凭据清洗与 rc.2 一致，因此本次无需改代码。
+  实现机制本身与平台无关，但 macOS 与 Linux 未做验证。
 
 ## DSH 升级之后
 
