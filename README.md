@@ -12,7 +12,7 @@ visible.
 > **Unofficial plugin:** This project is not affiliated with or endorsed by
 > DeepSeek. DSH extension APIs may change between releases.
 >
-> **Version note:** The version in `package.json` (currently `1.0.2`) is the
+> **Version note:** The version in `package.json` (currently `1.0.3`) is the
 > plugin version, not the DSH host version. The manifest declares no host
 > version constraint, so the compatibility notes below are advisory.
 
@@ -90,7 +90,7 @@ The plugin has no page of its own. It takes effect for the menus that offer
 - The DSH host runtime must provide `module.syncBuiltinESMExports` (current DSH
   desktop builds do). Without it the plugin row fails loudly instead of
   pretending to work.
-- Plugin version `1.0.2` is independent of the DSH host version;
+- Plugin version `1.0.3` is independent of the DSH host version;
   `package.json` declares no host version constraint.
 
 ## After a DSH upgrade
@@ -143,7 +143,7 @@ replacement, detached launch stripping, JavaScript-entrypoint preservation, and
 attached-child preservation. The integration tests require Windows because they
 use `ComSpec`/`cmd.exe`.
 
-See [AGENT.md](AGENT.md) for architecture, behavior contracts, and upgrade
+See [AGENTS.md](AGENTS.md) for architecture, behavior contracts, and upgrade
 notes (repository only).
 
 ## Structure
@@ -163,13 +163,13 @@ notes (repository only).
 | `test/index.test.mjs` | Plugin entry smoke test: `name` export and `ctx.effect` wiring | — |
 | `test/integration.test.mjs` | Integration tests with real `child_process` (Windows) | — |
 | `tools/doctor.mjs` | Read-only doctor for post-DSH-upgrade checks | — |
-| `AGENT.md` | Development-agent guide, in Chinese | — |
+| `AGENTS.md` | Development-agent guide, in Chinese | — |
 | `.gitignore` | Ignores `node_modules/`, logs, and OS files | — |
 
 `npm pack --dry-run` publishes 11 files: `index.js`, `intercept.js`,
 `cordis.patch.yml`, `locale/en.json`, `locale/zh.json`, `icon.svg`,
 `CHANGELOG.md`, `LICENSE`, `README.md`, `README.zh.md`, and `package.json`.
-`AGENT.md`, `test/`, `tools/`, and `.gitignore` stay in the repository.
+`AGENTS.md`, `test/`, `tools/`, and `.gitignore` stay in the repository.
 
 ## Troubleshooting
 

@@ -1,6 +1,6 @@
-# AGENT.md
+# AGENTS.md
 
-本文件面向在本仓库中工作的编码代理，适用于整个项目。本文件本身就是中文版本，仓库内没有单独的英文版；面向用户的文档是英文 `README.md` 与中文 `README.zh.md`。
+本文件面向在本仓库中工作的编码代理，适用于整个项目。本文件使用 `AGENTS.md` 这一标准文件名，DSH 会自动把它作为工作区指令加载。本文件本身就是中文版本，仓库内没有单独的英文版；面向用户的文档是英文 `README.md` 与中文 `README.zh.md`。
 
 ## 项目概述
 
@@ -22,10 +22,10 @@
 
 | 项目 | 当前情况 |
 | --- | --- |
-| npm 包名 / 版本 | `@local/gui-launch-env-fix` / `1.0.2`（插件版本，与宿主版本无关） |
+| npm 包名 / 版本 | `@local/gui-launch-env-fix` / `1.0.3`（插件版本，与宿主版本无关） |
 | 已验证宿主 | DSH `0.2.2-rc.3`，Windows Desktop；macOS 与 Linux 未验证 |
 | 测试 | 13 个单元测试 + 4 个集成测试，`npm test` 全部通过 |
-| 发布内容 | `npm pack --dry-run` 为 11 个文件；`AGENT.md`、`test/`、`tools/` 不发布 |
+| 发布内容 | `npm pack --dry-run` 为 11 个文件；`AGENTS.md`、`test/`、`tools/` 不发布 |
 | 运行时依赖 / CI | 无第三方依赖、无构建步骤、无 CI |
 
 ## 技术约束
@@ -55,10 +55,10 @@
 | `test/index.test.mjs` | 插件入口冒烟测试：`name` 与 `ctx.effect` 接线 | — |
 | `test/integration.test.mjs` | 真实 `child_process` 的集成测试（Windows） | — |
 | `tools/doctor.mjs` | DSH 升级后的只读自检脚本 | — |
-| `AGENT.md` | 本文件：开发代理指南 | — |
+| `AGENTS.md` | 本文件：开发代理指南 | — |
 | `.gitignore` | 忽略 `node_modules/`、日志与系统文件 | — |
 
-`npm pack --dry-run` 当前发布 11 个文件。`package.json` 的 `files` 是白名单：新增运行时文件（例如新的 `.js` 模块或 locale 文件）必须加入该清单，否则安装后会在宿主里缺文件；测试、`tools/` 与 `AGENT.md` 不得加入。
+`npm pack --dry-run` 当前发布 11 个文件。`package.json` 的 `files` 是白名单：新增运行时文件（例如新的 `.js` 模块或 locale 文件）必须加入该清单，否则安装后会在宿主里缺文件；测试、`tools/` 与 `AGENTS.md` 不得加入。
 
 ## 工作原理
 
@@ -191,7 +191,7 @@ DSH 升级验证通过后，更新 `README.md` / `README.zh.md` 的兼容版本�
 - 优先小而集中的修改，保持现有代码风格：2 空格缩进、单引号、无分号、英文 JSDoc 注释、函数保持单一职责。
 - 行为变化时同步更新：相关测试、`locale/en.json` 与 `locale/zh.json`（如果用户可见文案变化）、`CHANGELOG.md` 与版本号。
 - `README.md` 与 `README.zh.md` 是用户文档，必须逐节对应、事实与数字一致；任何用户可见的行为、安装方式、兼容性或限制变化都要同步更新两份 README。
-- `AGENT.md` 是仓库内开发指南，不随 npm 包发布；行为契约、测试命令、目录职责或发布清单变化时同步更新本文件。
+- `AGENTS.md` 是仓库内开发指南，不随 npm 包发布；行为契约、测试命令、目录职责或发布清单变化时同步更新本文件。
 - 不引入第三方运行时依赖；不添加构建工具、格式化工具或无关重构。
 - 不修改 `process.env`，不在日志中输出环境变量值；插件不应联网。
 - 保持 README 中已知限制的表述准确：DSH 终端不在覆盖范围（终端里 `code .` 仍继承变量）；只 patch `spawn`；上游自行清洗后插件为空转。
@@ -204,7 +204,7 @@ DSH 升级验证通过后，更新 `README.md` / `README.zh.md` 的兼容版本�
 - **只按后缀判断脚本**：`.js` 字符串可能不存在；必须 `statSync` 确认是文件，否则 GitHub Desktop 等启动会误保留变量。
 - **假定 `options.env` 一定存在**：open-in-app 可能不传 `env`，此时要从 `process.env` 复制；但绝不能写回 `process.env`。
 - **让拦截器异常冒泡**：任何判断失败都必须回退原始调用；启动失败比环境变量泄漏更严重。
-- **改变 `files` 白名单**：把 `AGENT.md`、测试或 `tools/` 加进去会污染发布包；新增运行时文件则必须加。
+- **改变 `files` 白名单**：把 `AGENTS.md`、测试或 `tools/` 加进去会污染发布包；新增运行时文件则必须加。
 
 ## 验证清单
 
@@ -212,6 +212,6 @@ DSH 升级验证通过后，更新 `README.md` / `README.zh.md` 的兼容版本�
 
 1. `npm test` 全部通过（13 个单元 + 4 个集成），新增行为有对应测试。
 2. 用户可见文案中英文一致，两份 README 的章节、限制与兼容版本一致。
-3. `package.json` 的 `files`、`exports` 与实际文件一致；`npm pack --dry-run --json` 仍为 11 个文件且不含 `AGENT.md`。
+3. `package.json` 的 `files`、`exports` 与实际文件一致；`npm pack --dry-run --json` 仍为 11 个文件且不含 `AGENTS.md`。
 4. 若修改了拦截逻辑，重跑 `node tools/doctor.mjs`，确认 DSH 版本、泄漏与启动形态结论符合预期。
 5. `git status` 只包含本任务需要的改动。

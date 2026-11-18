@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3
+
+- Renamed the repository development-agent guide from `AGENT.md` to
+  `AGENTS.md` so DSH loads it automatically as workspace instructions;
+  updated references in both READMEs and in the guide itself.
+- Documentation-only release; plugin runtime code is unchanged.
+
 ## 1.0.2
 
 - Documentation and test hardening release; no runtime behavior change.

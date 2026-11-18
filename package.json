@@ -1,6 +1,6 @@
 {
   "name": "@local/gui-launch-env-fix",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "DSH plugin that strips the inherited ELECTRON_RUN_AS_NODE from detached GUI launches so Open in VS Code and similar applications show their window",
   "type": "module",

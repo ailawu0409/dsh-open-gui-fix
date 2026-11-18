@@ -10,7 +10,7 @@
 
 > **非官方插件**：本项目与 DeepSeek 官方无隶属关系，也未获其认可。DSH 扩展 API 可能随版本变化。
 >
-> **版本说明**：`package.json` 中的版本（当前 `1.0.2`）是插件版本，不是 DSH 宿主版本。清单未声明宿主
+> **版本说明**：`package.json` 中的版本（当前 `1.0.3`）是插件版本，不是 DSH 宿主版本。清单未声明宿主
 > 版本约束，因此下文兼容性说明仅供参考。
 
 ## 为什么点了没反应
@@ -73,7 +73,7 @@ DSH 链接的是插件目录；插件安装期间不要移动或删除该目录�
 - 已在 DSH `0.2.2-rc.3` + Windows 桌面端验证。实现机制与平台无关，但 macOS 与 Linux 未验证。
 - DSH 宿主运行时必须提供 `module.syncBuiltinESMExports`（当前 DSH 桌面端均提供）。缺少它时插件行会
   显式报错，而不是假装生效。
-- 插件版本 `1.0.2` 与 DSH 宿主版本无关；`package.json` 未声明宿主版本约束。
+- 插件版本 `1.0.3` 与 DSH 宿主版本无关；`package.json` 未声明宿主版本约束。
 
 ## DSH 升级之后
 
@@ -114,7 +114,7 @@ npm pack --dry-run --json         # 检查实际发布内容
 替换、detached 启动丢失变量、JavaScript 入口启动保留变量、普通子进程保留变量。集成测试依赖
 Windows 的 `ComSpec`/`cmd.exe`。
 
-架构、行为契约与升级检查见 [AGENT.md](AGENT.md)（仅仓库内）。
+架构、行为契约与升级检查见 [AGENTS.md](AGENTS.md)（仅仓库内）。
 
 ## 结构
 
@@ -133,12 +133,12 @@ Windows 的 `ComSpec`/`cmd.exe`。
 | `test/index.test.mjs` | 插件入口冒烟测试：`name` 导出与 `ctx.effect` 接线 | — |
 | `test/integration.test.mjs` | 使用真实 `child_process` 的集成测试（Windows） | — |
 | `tools/doctor.mjs` | DSH 升级后的只读自检脚本 | — |
-| `AGENT.md` | 开发代理指南（中文） | — |
+| `AGENTS.md` | 开发代理指南（中文） | — |
 | `.gitignore` | 忽略 `node_modules/`、日志与系统文件 | — |
 
 `npm pack --dry-run` 实际发布 11 个文件：`index.js`、`intercept.js`、`cordis.patch.yml`、
 `locale/en.json`、`locale/zh.json`、`icon.svg`、`CHANGELOG.md`、`LICENSE`、`README.md`、
-`README.zh.md` 与 `package.json`。`AGENT.md`、`test/`、`tools/` 与 `.gitignore` 只留在仓库中。
+`README.zh.md` 与 `package.json`。`AGENTS.md`、`test/`、`tools/` 与 `.gitignore` 只留在仓库中。
 
 ## 故障排查
 
