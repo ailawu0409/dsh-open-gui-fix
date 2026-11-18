@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2
+
+- Documentation and test hardening release; no runtime behavior change.
+- Added unit tests for the `options.env` fallback, the install-time
+  `TypeError` guards, and disposer ownership; added an entry smoke test for
+  `name` and `ctx.effect` (13 unit + 4 integration tests).
+- Expanded both READMEs and AGENT.md with install/update, structure,
+  troubleshooting, and credential-scrub wording.
+
 ## 1.0.1
 
 - Verified against DSH `0.2.2-rc.3` on Windows Desktop. No plugin code change:

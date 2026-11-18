@@ -156,3 +156,49 @@ test('installation is idempotent and disposal restores the original export', () 
   first()
   assert.equal(childProcess.spawn, spawn)
 })
+
+test('a detached launch without an env option strips a copy of process.env', () => {
+  const { childProcess, calls } = stubChildProcess()
+  const install = installSpawnInterceptor({ childProcess, syncBuiltinESMExports: noSync })
+  const saved = process.env.ELECTRON_RUN_AS_NODE
+  process.env.ELECTRON_RUN_AS_NODE = '1'
+  try {
+    childProcess.spawn('Code.exe', ['D:\\Projects\\demo'], { detached: true })
+
+    const options = calls[0][2]
+    const expected = Object.fromEntries(
+      Object.entries(process.env).filter(([key]) => key.toUpperCase() !== 'ELECTRON_RUN_AS_NODE'),
+    )
+    assert.notEqual(options.env, process.env)
+    assert.equal(options.env.ELECTRON_RUN_AS_NODE, undefined)
+    assert.deepEqual(options.env, expected)
+    assert.equal(process.env.ELECTRON_RUN_AS_NODE, '1')
+  } finally {
+    if (saved === undefined) delete process.env.ELECTRON_RUN_AS_NODE
+    else process.env.ELECTRON_RUN_AS_NODE = saved
+    install()
+  }
+})
+
+test('installation fails loudly when the runtime cannot support it', () => {
+  const { childProcess } = stubChildProcess()
+  const original = childProcess.spawn
+  assert.throws(
+    () => installSpawnInterceptor({ childProcess, syncBuiltinESMExports: undefined }),
+    TypeError,
+  )
+  assert.equal(childProcess.spawn, original)
+  assert.throws(
+    () => installSpawnInterceptor({ childProcess: { spawn: 'not-a-function' }, syncBuiltinESMExports: noSync }),
+    TypeError,
+  )
+})
+
+test('disposal leaves a foreign spawn patch alone', () => {
+  const { childProcess } = stubChildProcess()
+  const dispose = installSpawnInterceptor({ childProcess, syncBuiltinESMExports: noSync })
+  const foreign = () => 'foreign'
+  childProcess.spawn = foreign
+  dispose()
+  assert.equal(childProcess.spawn, foreign)
+})
