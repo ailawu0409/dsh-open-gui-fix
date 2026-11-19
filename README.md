@@ -12,9 +12,10 @@ visible.
 > **Unofficial plugin:** This project is not affiliated with or endorsed by
 > DeepSeek. DSH extension APIs may change between releases.
 >
-> **Version note:** The version in `package.json` (currently `1.0.3`) is the
-> plugin version, not the DSH host version. The manifest declares no host
-> version constraint, so the compatibility notes below are advisory.
+> **Version note:** The version in `package.json` (currently `1.0.4`) is the
+> plugin version, not the DSH host version. The manifest declares its DSH
+> compatibility range through `engines.dsh`; the compatibility notes below
+> describe the verified baseline.
 
 ## Why the click did nothing
 
@@ -85,13 +86,20 @@ The plugin has no page of its own. It takes effect for the menus that offer
 
 ## Compatibility
 
-- DSH `0.2.2-rc.3` on Windows Desktop is verified. The mechanism is not
-  Windows-specific, but macOS and Linux are untested.
+- DSH `0.2.2-rc.5` on Windows Desktop is verified. The
+  `@deepseek-ai/dsh-host-open-in-app` and `@deepseek-ai/dsh-subprocess` builds
+  in rc.5 are byte-for-byte identical to rc.3, so this release does not change
+  the interceptor. The mechanism is not Windows-specific, but macOS and Linux
+  are untested.
 - The DSH host runtime must provide `module.syncBuiltinESMExports` (current DSH
   desktop builds do). Without it the plugin row fails loudly instead of
   pretending to work.
-- Plugin version `1.0.3` is independent of the DSH host version;
-  `package.json` declares no host version constraint.
+- Plugin version `1.0.4` is independent of the DSH host version.
+  `package.json` declares `engines.dsh: ^0.2.2-rc.3` (the 0.2.x line), which
+  the DSH 0.2.2 plugin compatibility check reads. DSH 0.2.2 reports versions
+  outside that range as incompatible and refuses installation; startup skips
+  an incompatible bundle. Older hosts that predate this check may ignore the
+  field.
 
 ## After a DSH upgrade
 
@@ -104,9 +112,11 @@ node tools/doctor.mjs
 
 It re-executes itself under the DSH runtime when the packages live inside
 `app.asar`; it reads `DSH_INSTALL_DIR` and `DSH_NODE_EXECUTABLE` from the DSH
-shell. The doctor is read-only: it does not start DSH or modify the profile. Its
-verdict tells you whether to keep the plugin, remove it because upstream fixed
-the leak, or update `intercept.js` because the launch implementation changed.
+shell. It also reports the open-in-app launch function name
+(`launchDetachedApp`). The doctor is read-only: it does not start DSH or
+modify the profile. Its verdict tells you whether to keep the plugin, remove
+it because upstream fixed the leak, or update `intercept.js` because the
+launch implementation changed.
 
 ## Limitations
 
@@ -120,8 +130,9 @@ the leak, or update `intercept.js` because the launch implementation changed.
 
 ## Development
 
-Node.js `24.17.0` is the current development environment; `package.json` does
-not declare an `engines` constraint. The project has no third-party runtime
+Node.js `24.17.0` is the current development environment; `package.json`
+declares no `engines.node` constraint (it only declares the DSH compatibility
+range under `engines.dsh`). The project has no third-party runtime
 dependencies and does not require a dependency-install step for its tests.
 There is no CI; run the full suite locally.
 
@@ -155,7 +166,7 @@ notes (repository only).
 | `cordis.patch.yml` | Inserts the plugin row into the DSH bundle | ✓ |
 | `locale/en.json`, `locale/zh.json` | Plugin page title and description (English / Chinese) | ✓ |
 | `icon.svg` | Plugin icon | ✓ |
-| `package.json` | Package exports, `dsh.bundle.patch`, `files` manifest, and `npm test` script | ✓ (npm always includes) |
+| `package.json` | Package exports, `dsh.bundle.patch`, `engines.dsh`, `files` manifest, and `npm test` script | ✓ (npm always includes) |
 | `README.md`, `README.zh.md` | User documentation (English / Chinese) | ✓ |
 | `CHANGELOG.md` | Release history | ✓ |
 | `LICENSE` | MIT license | ✓ |

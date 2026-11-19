@@ -66,6 +66,7 @@ const scrubLeaks = Object.keys(scrubbed).some((key) => key.toUpperCase() === SWI
 // 2. Does the open-in-app host half still launch detached through spawn?
 const openInApp = readPackageFile('@deepseek-ai/dsh-host-open-in-app', join('lib', 'index.js'))
 const launchDetached = openInApp !== null && /detached:\s*(?:!0|true)/.test(openInApp)
+const launchDetachedApp = openInApp !== null && /(?:const|let|var|function)\s+launchDetachedApp\b/.test(openInApp)
 const usesSpawn = openInApp !== null && /from "node:child_process"/.test(openInApp)
 const mergesScrub = openInApp !== null && /scrubbedParentEnv/.test(openInApp)
 
@@ -73,13 +74,14 @@ console.log(`DSH installation : ${installDir}`)
 console.log(`DSH version : ${createRequire(join(installDir, 'package.json'))(join(installDir, 'package.json')).version}`)
 console.log(`scrub still forwards ${SWITCH} : ${scrubLeaks ? 'YES' : 'no'}`)
 console.log(`open-in-app spawns detached : ${launchDetached ? 'yes' : 'NO'}`)
+console.log(`open-in-app launch function : ${launchDetachedApp ? 'launchDetachedApp' : 'NOT FOUND'}`)
 console.log(`open-in-app imports child_process : ${usesSpawn ? 'yes' : 'NO'}`)
 console.log(`open-in-app merges scrubbedParentEnv : ${mergesScrub ? 'yes' : 'no'}`)
 
 if (!scrubLeaks) {
   console.log('\nVerdict: upstream no longer forwards the switch at the scrub layer.')
   console.log('This plugin is a harmless no-op now; disable or remove it.')
-} else if (launchDetached && usesSpawn && mergesScrub) {
+} else if (launchDetached && launchDetachedApp && usesSpawn && mergesScrub) {
   console.log('\nVerdict: the leak and the intercepted launch shape are both still here.')
   console.log('Keep the plugin. If "Open in VS Code" stops working after an upgrade,')
   console.log('re-check the predicates in intercept.js against the installed open-in-app code.')

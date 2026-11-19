@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.4
+
+- Verified against DSH `0.2.2-rc.5` on Windows Desktop. The
+  `@deepseek-ai/dsh-host-open-in-app` and `@deepseek-ai/dsh-subprocess` builds in
+  rc.5 are byte-for-byte identical to rc.3, so the interceptor is unchanged; the
+  `launchDetachedApp` option shape and the credential scrub are the same.
+- Added the `engines.dsh: "^0.2.2-rc.3"` manifest range so DSH 0.2.2's
+  plugin compatibility check recognizes the supported 0.2.x host versions;
+  0.3 and later are not claimed until the launch shape is re-verified.
+- Updated `tools/doctor.mjs` to recognize `launchDetachedApp` declared with
+  `const`, `let`, `var`, or `function` when checking the launch shape.
+- Manifest, documentation, test-shape, and doctor update; plugin runtime code is
+  unchanged.
+
 ## 1.0.3
 
 - Renamed the repository development-agent guide from `AGENT.md` to

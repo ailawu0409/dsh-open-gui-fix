@@ -22,8 +22,8 @@
 
 | 项目 | 当前情况 |
 | --- | --- |
-| npm 包名 / 版本 | `@local/gui-launch-env-fix` / `1.0.3`（插件版本，与宿主版本无关） |
-| 已验证宿主 | DSH `0.2.2-rc.3`，Windows Desktop；macOS 与 Linux 未验证 |
+| npm 包名 / 版本 | `@local/gui-launch-env-fix` / `1.0.4`（插件版本，与宿主版本无关） |
+| 已验证宿主 | DSH `0.2.2-rc.5`，Windows Desktop（rc.5 的 open-in-app/subprocess 构建与 rc.3 逐字节相同）；macOS 与 Linux 未验证 |
 | 测试 | 13 个单元测试 + 4 个集成测试，`npm test` 全部通过 |
 | 发布内容 | `npm pack --dry-run` 为 11 个文件；`AGENTS.md`、`test/`、`tools/` 不发布 |
 | 运行时依赖 / CI | 无第三方依赖、无构建步骤、无 CI |
@@ -47,7 +47,7 @@
 | `cordis.patch.yml` | 向 DSH bundle 插入插件行 | ✓ |
 | `locale/en.json`、`locale/zh.json` | 插件页标题与描述（中英文） | ✓ |
 | `icon.svg` | 插件图标 | ✓ |
-| `package.json` | 包导出、`dsh.bundle.patch`、`files` 白名单与 `npm test` | ✓（npm 自动带入） |
+| `package.json` | 包导出、`dsh.bundle.patch`、`engines.dsh`、`files` 白名单与 `npm test` | ✓（npm 自动带入） |
 | `README.md`、`README.zh.md` | 功能、安装、兼容性、开发、结构与自检说明（英文 / 中文） | ✓ |
 | `CHANGELOG.md` | 版本记录 | ✓ |
 | `LICENSE` | MIT 许可 | ✓ |
@@ -133,7 +133,7 @@ DSH 宿主进程（ELECTRON_RUN_AS_NODE=1）
   ```
 
 - `locale/en.json` 与 `locale/zh.json` 的 `meta.title` / `meta.description` 是插件页用户可见文案；行为、限制或安装说明变化时要同步更新两种语言。
-- `package.json` 的关键字段：`"type": "module"`、`"exports"`（`.` → `./index.js`，`./locale/*.json`，`./icon`）、`"dsh.bundle.patch": "./cordis.patch.yml"`、`"files"` 白名单和 `"scripts.test"`。
+- `package.json` 的关键字段：`"type": "module"`、`"exports"`（`.` → `./index.js`，`./locale/*.json`，`./icon`）、`"engines.dsh": "^0.2.2-rc.3"`、`"dsh.bundle.patch": "./cordis.patch.yml"`、`"files"` 白名单和 `"scripts.test"`。
 - 安装方式是按目录安装的本地方案，DSH 会链接该目录：克隆位置要固定，不要移动或删除；用 `plugin_manager install_bundle target="<绝对路径>"` 安装。
 - 全新启用插件行立即生效；替换已安装副本后需要重启 DSH，让宿主重新加载模块。
 - 插件没有自己的页面，只对 **Open in ... / 在应用中打开** 菜单生效。
@@ -149,7 +149,7 @@ node tools/doctor.mjs             # DSH 升级后的只读自检
 npm pack --dry-run --json         # 检查实际发布内容（应为 11 个文件）
 ```
 
-项目没有依赖，不需要 `npm install`。当前开发环境为 Node `24.17.0`，`package.json` 未声明 `engines`；集成测试依赖 `process.env.ComSpec ?? 'cmd.exe'`，在非 Windows 环境会失败。
+项目没有依赖，不需要 `npm install`。当前开发环境为 Node `24.17.0`，`package.json` 未声明 `engines.node`（仅声明 `engines.dsh`）；集成测试依赖 `process.env.ComSpec ?? 'cmd.exe'`，在非 Windows 环境会失败。
 
 ## 开发循环
 
@@ -182,7 +182,13 @@ node tools/doctor.mjs
 2. 输出 `Verdict: the leak and the intercepted launch shape are both still here.`：继续保留；若升级后 Open in 失效，再对照 `intercept.js` 的谓词检查安装的 open-in-app 代码。
 3. 输出 `Verdict: the launch shape changed, so the interceptor may not match any more.`：拦截器可能已不匹配，先阅读安装目录中的 `@deepseek-ai/dsh-host-open-in-app` 与 `@deepseek-ai/dsh-subprocess`，再更新 `intercept.js` 与测试。
 
-doctor 的检查是静态启发式（正则匹配 `detached`、`from "node:child_process"`、`scrubbedParentEnv`），打包格式变化可能造成误报或漏报；结论异常时以实际安装代码为准。
+doctor 的检查是静态启发式（正则匹配 `detached`、`launchDetachedApp`（`const`/`let`/`var`/`function` 声明形式）、`from "node:child_process"`、`scrubbedParentEnv`），打包格式变化可能造成误报或漏报；结论异常时以实际安装代码为准。
+
+### 1.0.4 对齐 DSH 0.2.2-rc.5
+
+- rc.5 的 `@deepseek-ai/dsh-host-open-in-app` 与 `@deepseek-ai/dsh-subprocess` 构建与 rc.3 逐字节相同（SHA-256 一致），`launchDetachedApp` 仍使用 `{ detached: true, stdio: "ignore", windowsHide, env }` 这一启动形态；因此 1.0.4 不修改 `intercept.js` / `index.js`。
+- `package.json` 增加 `engines.dsh: "^0.2.2-rc.3"`（仅承诺 0.2.x；0.3 及以上需重新验证启动形态后再放宽），让 DSH 0.2.2 的 `evaluatePluginCompatibility` 能读取并校验兼容范围。
+- `node tools/doctor.mjs` 在 rc.5 上的结论为 `Verdict: the leak and the intercepted launch shape are both still here.`，并额外输出 `open-in-app launch function : launchDetachedApp`；检测支持 `const`/`let`/`var`/`function` 声明形式。
 
 DSH 升级验证通过后，更新 `README.md` / `README.zh.md` 的兼容版本说明、在 `CHANGELOG.md` 增加记录，并视情况提升 `package.json` 版本号。
 
@@ -212,6 +218,6 @@ DSH 升级验证通过后，更新 `README.md` / `README.zh.md` 的兼容版本�
 
 1. `npm test` 全部通过（13 个单元 + 4 个集成），新增行为有对应测试。
 2. 用户可见文案中英文一致，两份 README 的章节、限制与兼容版本一致。
-3. `package.json` 的 `files`、`exports` 与实际文件一致；`npm pack --dry-run --json` 仍为 11 个文件且不含 `AGENTS.md`。
+3. `package.json` 的 `files`、`exports`、`engines.dsh` 与实际一致；`npm pack --dry-run --json` 仍为 11 个文件且不含 `AGENTS.md`。
 4. 若修改了拦截逻辑，重跑 `node tools/doctor.mjs`，确认 DSH 版本、泄漏与启动形态结论符合预期。
 5. `git status` 只包含本任务需要的改动。

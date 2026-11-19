@@ -70,7 +70,13 @@ test('a detached GUI launch gets a stripped environment copy', () => {
   const install = installSpawnInterceptor({ childProcess, syncBuiltinESMExports: noSync })
   try {
     const env = { PATH: 'x', ELECTRON_RUN_AS_NODE: '1' }
-    childProcess.spawn('Code.exe', ['D:\\Projects\\demo'], { detached: true, stdio: 'ignore', env })
+    // The exact option shape of DSH 0.2.2-rc.5's launchDetachedApp.
+    childProcess.spawn('Code.exe', ['D:\\Projects\\demo'], {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: undefined,
+      env,
+    })
 
     assert.equal(calls.length, 1)
     const [command, argv, options] = calls[0]
@@ -78,6 +84,8 @@ test('a detached GUI launch gets a stripped environment copy', () => {
     assert.deepEqual(argv, ['D:\\Projects\\demo'])
     assert.equal(options.detached, true)
     assert.equal(options.stdio, 'ignore')
+    assert.equal(Object.hasOwn(options, 'windowsHide'), true)
+    assert.equal(options.windowsHide, undefined)
     assert.deepEqual(options.env, { PATH: 'x' })
     assert.deepEqual(env, { PATH: 'x', ELECTRON_RUN_AS_NODE: '1' })
   } finally {

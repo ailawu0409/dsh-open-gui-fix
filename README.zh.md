@@ -10,8 +10,8 @@
 
 > **非官方插件**：本项目与 DeepSeek 官方无隶属关系，也未获其认可。DSH 扩展 API 可能随版本变化。
 >
-> **版本说明**：`package.json` 中的版本（当前 `1.0.3`）是插件版本，不是 DSH 宿主版本。清单未声明宿主
-> 版本约束，因此下文兼容性说明仅供参考。
+> **版本说明**：`package.json` 中的版本（当前 `1.0.4`）是插件版本，不是 DSH 宿主版本。清单通过
+> `engines.dsh` 声明 DSH 兼容范围；下文兼容性说明描述已验证的基线。
 
 ## 为什么点了没反应
 
@@ -70,10 +70,14 @@ DSH 链接的是插件目录；插件安装期间不要移动或删除该目录�
 
 ## 兼容性
 
-- 已在 DSH `0.2.2-rc.3` + Windows 桌面端验证。实现机制与平台无关，但 macOS 与 Linux 未验证。
+- 已在 DSH `0.2.2-rc.5` + Windows 桌面端验证。rc.5 的 `@deepseek-ai/dsh-host-open-in-app` 与
+  `@deepseek-ai/dsh-subprocess` 构建与 rc.3 逐字节相同，因此本版本不修改拦截逻辑。实现机制与平台无关，
+  但 macOS 与 Linux 未验证。
 - DSH 宿主运行时必须提供 `module.syncBuiltinESMExports`（当前 DSH 桌面端均提供）。缺少它时插件行会
   显式报错，而不是假装生效。
-- 插件版本 `1.0.3` 与 DSH 宿主版本无关；`package.json` 未声明宿主版本约束。
+- 插件版本 `1.0.4` 与 DSH 宿主版本无关。`package.json` 声明 `engines.dsh: ^0.2.2-rc.3`（0.2.x
+  系列），DSH 0.2.2 的插件兼容性检查会读取该字段。DSH 0.2.2 会把范围外版本报告为不兼容并拒绝安装；
+  启动时也会跳过不兼容的 bundle。更早、没有该检查的宿主可能忽略此字段。
 
 ## DSH 升级之后
 
@@ -84,8 +88,9 @@ node tools/doctor.mjs
 ```
 
 当 DSH 的包位于 `app.asar` 内时，脚本会自动改用 DSH 运行时重新执行自己；它从 DSH shell 读取
-`DSH_INSTALL_DIR` 与 `DSH_NODE_EXECUTABLE`。自检是只读的：不会启动 DSH，也不会修改 profile。
-它的结论会告诉你是继续保留插件、因为上游已修复而移除，还是因为启动实现变了而需要更新 `intercept.js`。
+`DSH_INSTALL_DIR` 与 `DSH_NODE_EXECUTABLE`。它还会报告 open-in-app 的启动函数名
+（`launchDetachedApp`）。自检是只读的：不会启动 DSH，也不会修改 profile。它的结论会告诉你是继续
+保留插件、因为上游已修复而移除，还是因为启动实现变了而需要更新 `intercept.js`。
 
 ## 已知限制
 
@@ -96,7 +101,8 @@ node tools/doctor.mjs
 
 ## 开发
 
-当前开发环境为 Node.js `24.17.0`；`package.json` 未声明 `engines` 约束。项目没有第三方运行时依赖，
+当前开发环境为 Node.js `24.17.0`；`package.json` 未声明 `engines.node` 约束（仅在 `engines.dsh`
+中声明 DSH 兼容范围）。项目没有第三方运行时依赖，
 测试也不需要安装任何依赖；仓库没有 CI，请在本地运行完整测试。
 
 ### 测试
@@ -125,7 +131,7 @@ Windows 的 `ComSpec`/`cmd.exe`。
 | `cordis.patch.yml` | 向 DSH bundle 插入插件行 | ✓ |
 | `locale/en.json`、`locale/zh.json` | 插件页标题与描述（英文 / 中文） | ✓ |
 | `icon.svg` | 插件图标 | ✓ |
-| `package.json` | 包导出、`dsh.bundle.patch`、`files` 清单与 `npm test` 脚本 | ✓（npm 自动带入） |
+| `package.json` | 包导出、`dsh.bundle.patch`、`engines.dsh`、`files` 清单与 `npm test` 脚本 | ✓（npm 自动带入） |
 | `README.md`、`README.zh.md` | 用户文档（英文 / 中文） | ✓ |
 | `CHANGELOG.md` | 版本记录 | ✓ |
 | `LICENSE` | MIT 许可 | ✓ |

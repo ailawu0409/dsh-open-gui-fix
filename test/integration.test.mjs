@@ -29,9 +29,9 @@ async function waitForReport(path, timeoutMs = 15_000) {
   throw new Error(`probe report was not written: ${path}`)
 }
 
-/** Run one detached launch with the exact shape the open-in-app launcher uses. */
+/** Run one detached launch with the exact shape DSH 0.2.2-rc.5's launchDetachedApp uses. */
 function launchDetached(command, argv, env) {
-  const child = esmSpawn(command, argv, { detached: true, stdio: 'ignore', env })
+  const child = esmSpawn(command, argv, { detached: true, stdio: 'ignore', windowsHide: undefined, env })
   child.unref()
 }
 
